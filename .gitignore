@@ -1,0 +1,13 @@
+__pycache__
+
+# environment files
+.env*
+
+# Virtual environment
+.venv
+
+# Feature trials
+prove
+
+# log files
+pipeline/logs/*

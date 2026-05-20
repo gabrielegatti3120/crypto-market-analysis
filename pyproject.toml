@@ -1,0 +1,18 @@
+[project]
+name = "crypto-market-analysis"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11.0"
+dependencies = [
+    "apache-airflow==3.2.1",
+    "apache-airflow-providers-apache-spark>=6.0.1",
+    "apache-airflow-providers-docker>=4.5.5",
+    "docker>=7.1.0",
+    "mlflow>=1.27.0",
+    "pandas>=3.0.2",
+    "pycoingecko>=3.2.0",
+    "pyspark>=4.1.1",
+    "python-binance>=1.0.36",
+    "requests>=2.33.1",
+]
