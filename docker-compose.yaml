@@ -321,6 +321,25 @@ services:
     networks:
       - crypto-net
 
+  # Notebooks to analyze data
+  jupyter:
+    image: jupyter/pyspark-notebook:latest
+    ports:
+      - "8888:8888"
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      SPARK_MASTER: "spark://spark-master:7077"
+      AWS_ACCESS_KEY_ID: minio_admin
+      AWS_SECRET_ACCESS_KEY: minio_password
+      AWS_ENDPOINT_URL: http://minio:9000
+    volumes:
+      - ./pipeline/notebooks:/home/jovyan/work
+    depends_on:
+      - spark-master
+      - minio
+    restart: always
+    networks:
+      - crypto-net
 volumes:
   postgres-airflow-db:
   postgres-data-db:
