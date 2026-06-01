@@ -1,7 +1,6 @@
 import os
 from airflow.sdk import dag
 from airflow.providers.docker.operators.docker import DockerOperator
-from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
 from docker.types import Mount
 from datetime import timedelta
 import pendulum
@@ -46,36 +45,32 @@ def spark_operator(task_id: str, job: str) -> DockerOperator:
         },
     )
 
-
 @dag(
-    dag_id="crypto_pipeline",
-    start_date=pendulum.datetime(2024, 1, 1, tz="UTC"),
-    schedule=None,  # Usa "0 * * * *" per eseguire ogni ora
-    catchup=False,
-    tags=["crypto", "coingecko", "binance"],
-    max_active_tasks=2,
-    dagrun_timeout=timedelta(hours=1)
+        dag_id="crypto_pipeline_silver",
+        start_date=pendulum.datetime(2024, 1, 1, tz="UTC"),
+        schedule=None,
+        catchup=False,
+        tags=["crypto", "silver", "medallion"],
+        max_active_tasks=2,
+        dagrun_timeout=timedelta(hours=2)
 )
-def crypto_pipeline():
+def crypto_pipeline_silver():
 
-    bronze_coingecko = spark_operator(
-        task_id="bronze_coingecko",
-        job="bronze_coingecko.py"
+    silver_binance_klines = spark_operator(
+        task_id="silver_binance_klines",
+        job="silver_binance_klines.py",
     )
 
-    bronze_binance = spark_operator(
-        task_id="bronze_binance",
-        job="bronze_binance.py"
+    silver_binance_trades = spark_operator(
+        task_id="silver_binance_trades",
+        job="silver_binance_trades.py",
     )
 
-    trigger_silver = TriggerDagRunOperator(
-        task_id="trigger_silver",
-        trigger_dag_id="crypto_pipeline_silver",
-        wait_for_completion=False
+    silver_coingecko = spark_operator(
+        task_id="silver_coingecko",
+        job="silver_coingecko.py",
     )
 
-    # I due task girano in parallelo
-    [bronze_coingecko, bronze_binance] >> trigger_silver
+    [silver_binance_klines, silver_binance_trades, silver_coingecko]
 
-
-crypto_pipeline()
+crypto_pipeline_silver()
